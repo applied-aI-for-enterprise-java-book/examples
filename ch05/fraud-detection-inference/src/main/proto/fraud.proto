@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.acme.stub";
+
+package fraud;
+
+
+service FraudDetection {
+    rpc Predict (TransactionDetails) returns (FraudResponse) {}
+}
+
+message TransactionDetails {
+    string tx_ud = 1;
+    float distance_from_last_transaction = 2;
+    float ratio_to_median_price = 3;
+    bool used_chip = 4;
+    bool used_pin_number = 5;
+    bool online_order = 6;
+}
+
+message FraudResponse {
+    string tx_ud = 1;
+    bool fraud = 2;
+}
