@@ -1,13 +1,18 @@
 package org.acme;
 
+import io.quarkus.grpc.GrpcClient;
 import io.quarkus.runtime.Startup;
+import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import org.acme.stub.FraudDetection;
+import org.acme.stub.FraudRes;
+import org.acme.stub.TxDetails;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @Path("/fraud")
@@ -53,5 +58,29 @@ public class TransactionResource {
         markTransactionFraud(fraudResponse.txId(), fraudResponse.fraud());
 
         return fraudResponse;
+    }
+
+    @GrpcClient("fraud")
+    FraudDetection fraud;
+
+    @GET
+    @Path("/grpc/{txId}")
+    public Uni<FraudResponse> detectFraudGrpcClient(@PathParam("txId") String txId) {
+
+        final TransactionDetails tx = findTransactionById(txId);
+
+        final TxDetails txDetails = TxDetails.newBuilder()
+            .setTxId(txId)
+            .setDistanceFromLastTransaction(tx.distanceFromLastTransaction())
+            .setRatioToMedianPrice(tx.ratioToMedianPrice())
+            .setOnlineOrder(tx.onlineOrder())
+            .setUsedChip(tx.usedChip())
+            .setUsedPinNumber(tx.usedPinNumber())
+            .build();
+
+        final Uni<FraudRes> predicted = fraud.predict(txDetails);
+        return predicted
+            .onItem()
+            .transform(fr -> new FraudResponse(fr.getTxId(), fr.getFraud()));
     }
 }

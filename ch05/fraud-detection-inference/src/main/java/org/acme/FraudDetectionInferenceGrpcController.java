@@ -10,7 +10,7 @@ import org.acme.stub.FraudResponse;
 import org.acme.stub.TransactionDetails;
 
 @GrpcService
-public class FraudDetectionIngerenceGrpcController extends org.acme.stub.FraudDetectionGrpc.FraudDetectionImplBase {
+public class FraudDetectionInferenceGrpcController extends org.acme.stub.FraudDetectionGrpc.FraudDetectionImplBase {
 
     @Resource
     private Supplier<Predictor<org.acme.TransactionDetails, Boolean>> predictorSupplier;
@@ -29,17 +29,15 @@ public class FraudDetectionIngerenceGrpcController extends org.acme.stub.FraudDe
 
         try (var p = predictorSupplier.get()) {
 
-            try {
                 boolean fraud = p.predict(td);
                 FraudResponse fraudResponse = FraudResponse.newBuilder()
                     .setTxUd(td.txId())
                     .setFraud(fraud).build();
                 responseObserver.onNext(fraudResponse);
                 responseObserver.onCompleted();
-            } catch (TranslateException e) {
-                throw new RuntimeException(e);
-            }
 
+        } catch (TranslateException e) {
+            throw new RuntimeException(e);
         }
     }
 
