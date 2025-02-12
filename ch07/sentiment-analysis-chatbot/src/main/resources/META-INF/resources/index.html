@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .chat-container {
+            width: 400px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .chat-box {
+            height: 300px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .input-container {
+            display: flex;
+            align-items: center;
+        }
+        input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            margin-left: 10px;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<div class="chat-container">
+    <div class="chat-box" id="chat-box"></div>
+    <div class="input-container">
+        <input type="text" id="message" placeholder="Type a message...">
+        <div class="spinner" id="spinner"></div>
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    const ws = new WebSocket('ws://localhost:8080/chat');
+    const chatBox = document.getElementById('chat-box');
+    const messageInput = document.getElementById('message');
+    const spinner = document.getElementById('spinner');
+
+    ws.onmessage = function(event) {
+        appendMessage('Bot: ' + event.data, 'left');
+        spinner.style.display = 'none';
+    };
+
+    function sendMessage() {
+        const message = messageInput.value.trim();
+        if (message === '') return;
+
+        appendMessage('You: ' + message, 'right');
+        messageInput.value = '';
+        spinner.style.display = 'inline-block';
+
+        ws.send(message);
+    }
+
+    function appendMessage(text, alignment) {
+        const msgDiv = document.createElement('div');
+        msgDiv.textContent = text;
+        msgDiv.style.textAlign = alignment;
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+</body>
+</html>
