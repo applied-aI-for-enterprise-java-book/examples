@@ -4,11 +4,13 @@ import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import io.quarkiverse.langchain4j.RegisterAiService;
 import io.quarkiverse.langchain4j.ToolBox;
+import jakarta.enterprise.context.SessionScoped;
 import org.acme.data.RideRepository;
 import org.acme.times.WaitingTime;
 
 
 @RegisterAiService
+@SessionScoped
 public interface ThemeParkChatBot {
 
     @SystemMessage("""

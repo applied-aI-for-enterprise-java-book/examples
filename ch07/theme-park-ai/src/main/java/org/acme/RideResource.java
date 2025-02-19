@@ -73,7 +73,7 @@ public class RideResource {
     @GET
     @Path("/chat/waiting")
     public String askForWaitingTime() {
-        return this.themeParkChatBot.chat("What is the waiting time for Dragon Khan ride?");
+        return this.themeParkChatBot.chat("What is the waiting time for Dragon Fun ride?");
     }
 
     @GET
