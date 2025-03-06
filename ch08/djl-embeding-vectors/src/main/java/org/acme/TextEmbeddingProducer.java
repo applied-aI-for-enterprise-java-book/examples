@@ -1,6 +1,7 @@
 package org.acme;
 
 import ai.djl.MalformedModelException;
+import ai.djl.huggingface.tokenizers.HuggingFaceTokenizer;
 import ai.djl.huggingface.translator.TextEmbeddingTranslatorFactory;
 import ai.djl.inference.Predictor;
 import ai.djl.repository.zoo.Criteria;
@@ -18,7 +19,8 @@ import java.io.IOException;
 @ApplicationScoped
 public class TextEmbeddingProducer {
 
-    private static String MODEL_URL = "djl://ai.djl.huggingface.pytorch/sentence-transformers/paraphrase-albert-small-v2";
+    private static String MODEL_URL = "djl://ai.djl.huggingface.pytorch/" +
+            "sentence-transformers/paraphrase-albert-small-v2";
 
     private ZooModel<String, float[]> zooModel;
 
