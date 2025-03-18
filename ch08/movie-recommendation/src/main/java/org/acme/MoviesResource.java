@@ -6,9 +6,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.MediaType;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
@@ -103,7 +101,7 @@ public class MoviesResource {
     @Path("/search")
     public List<MovieApiDto> recommendMovies(@QueryParam("q") String description) {
 
-        float[] plotVector = embeddingCalculator.calculatVector(description);
+        float[] plotVector = embeddingCalculator.calculateVector(description);
 
         List<Movie> movies = Movie.suggestProducts(plotVector, highRatings);
         return movies.stream()
@@ -113,9 +111,16 @@ public class MoviesResource {
 
     }
 
+    @ConfigProperty(name = "poster.download")
+    boolean posterDownload;
+
     private String findPoster(String title) {
-        TmdbService.TmdbMovies tmdbMovies = tmdbService.searchMovie(tmdbAPiKey, title);
-        return "http://image.tmdb.org/t/p/w500/" + tmdbMovies.results().getFirst().poster_path();
+        if (posterDownload) {
+            TmdbService.TmdbMovies tmdbMovies = tmdbService.searchMovie(tmdbAPiKey, title);
+            return "http://image.tmdb.org/t/p/w500/" + tmdbMovies.results().getFirst().poster_path();
+        }
+
+        return "";
     }
 
     private String cutPlot(String plot) {

@@ -14,10 +14,10 @@ public class EmbeddingCalculator {
     EmbeddingModel embeddingModel;
 
     public float[] calculateVector(MovieDto movieDto) {
-        return calculatVector(movieDto.plot());
+        return calculateVector(movieDto.plot());
     }
 
-    public float[] calculatVector(String text) {
+    public float[] calculateVector(String text) {
         Response<Embedding> embeddingResponse = embeddingModel.embed(text);
         return embeddingResponse.content().vector();
     }
