@@ -24,13 +24,17 @@ public interface ThemeParkChatBot {
         - What is the minimum height to enter to a ride?
         - What rides can I access with my height?
         - What is the best ride at the moment?
-        - What is the waiting time for a given ride? 
+        - What is the waiting time for a given ride?
+        - What options I have to arrive to the theme park?
             
-        If questions are not about theme park or you don't know the answer, 
-        you should return always "I don't know".
-        Don't give information that it is wrong
+        If you need the location of the theme park to answer a question, 
+        the theme park is located at Barcelona.    
+        
+        Don't give information that it is wrong.
     """)
     @UserMessage("""
+        The theme park is located at Barcelona.
+        
         The theme park user has the following question: {question}
         
         The answer must be max 2 lines.
