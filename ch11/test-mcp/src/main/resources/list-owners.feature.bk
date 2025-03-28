@@ -1,0 +1,6 @@
+Navigate to website http://localhost:8080 and click the Find Owners link.
+Then click the "Find Owner" button, and verify that a table shown in the page contains 10 rows excluding the headers.
+
+If there are 10 rows, then return PASS, if not, return FAIL providing the number of elements found.
+
+After the execution, close the browser.
