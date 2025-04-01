@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Clone</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="calendar-container">
+    <header>
+        <button id="prev-month">&lt;</button>
+        <h2 id="month-year"></h2>
+        <button id="next-month">&gt;</button>
+    </header>
+    <div class="calendar">
+        <div class="weekdays">
+            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div>
+            <div>Thu</div><div>Fri</div><div>Sat</div>
+        </div>
+        <div class="days"></div>
+    </div>
+</div>
+
+<!-- Event Modal -->
+<div id="event-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Add Event</h2>
+        <input type="text" id="event-title" placeholder="Event Title">
+        <button id="save-event">Save</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
