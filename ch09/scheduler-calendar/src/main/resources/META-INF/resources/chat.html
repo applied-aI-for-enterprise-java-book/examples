@@ -3,20 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot with WebSocket</title>
-    <link rel="stylesheet" href="chat-style.css">
+    <title>Book a Meeting</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .radio-group {
+            text-align: left;
+            margin-top: 15px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .success {
+            font-size: 18px;
+            font-weight: bold;
+            color: green;
+            margin-top: 15px;
+        }
+    </style>
 </head>
 <body>
 
-<div class="chat-container">
-    <div class="chat-header">Chatbot</div>
-    <div class="chat-box" id="chat-box"></div>
-    <div class="chat-input-container">
-        <input type="text" id="chat-input" placeholder="Type a message...">
-        <button id="send-btn">Send</button>
-    </div>
+<div class="container">
+    <h2>Book a Meeting</h2>
+    <input type="text" id="description" placeholder="Describe when do you want the meeting and with whom">
+    <button id="submitName">Submit</button>
+
+    <div id="radioOptions" class="radio-group hidden"></div>
+
+    <input type="text" id="noteInput" class="hidden" placeholder="Enter a meeting note">
+    <button id="sendFinal" class="hidden">Send</button>
+
+    <p id="successMessage" class="success hidden">Invitation Sent!</p>
 </div>
 
-<script src="chat-script.js"></script>
+<script>
+    const nameInput = document.getElementById("description");
+    const submitNameBtn = document.getElementById("submitName");
+    const radioOptionsDiv = document.getElementById("radioOptions");
+    const noteInput = document.getElementById("noteInput");
+    const sendFinalBtn = document.getElementById("sendFinal");
+    const successMessage = document.getElementById("successMessage");
+
+    let selectedSlot = null;
+
+    // Step 1: Submit name and get available slots
+    submitNameBtn.addEventListener("click", async () => {
+
+        try {
+            const response = await fetch("https://api.example.com/get-slots", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name })
+            });
+
+            const data = await response.json();
+
+            if (data.slots && data.slots.length > 0) {
+                radioOptionsDiv.innerHTML = "";
+                data.slots.forEach(slot => {
+                    const label = document.createElement("label");
+                    label.innerHTML = `<input type="radio" name="slot" value="${slot}"> ${slot}`;
+                    radioOptionsDiv.appendChild(label);
+                    radioOptionsDiv.appendChild(document.createElement("br"));
+                });
+
+                radioOptionsDiv.classList.remove("hidden");
+            } else {
+                alert("No available slots. Try again later.");
+            }
+        } catch (error) {
+            console.error("Error fetching slots:", error);
+            alert("Failed to fetch available slots.");
+        }
+    });
+
+    // Step 2: Listen for radio button selection
+    radioOptionsDiv.addEventListener("change", (event) => {
+        if (event.target.type === "radio") {
+            selectedSlot = event.target.value;
+            noteInput.classList.remove("hidden");
+            sendFinalBtn.classList.remove("hidden");
+        }
+    });
+
+    // Step 3: Send final booking request
+    sendFinalBtn.addEventListener("click", async () => {
+        const note = noteInput.value.trim();
+
+        try {
+            const response = await fetch("https://api.example.com/book-meeting", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ slot: selectedSlot, note })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                nameInput.classList.add("hidden");
+                submitNameBtn.classList.add("hidden");
+                radioOptionsDiv.classList.add("hidden");
+                noteInput.classList.add("hidden");
+                sendFinalBtn.classList.add("hidden");
+                successMessage.classList.remove("hidden");
+            } else {
+                alert("Failed to book the meeting. Try again.");
+            }
+        } catch (error) {
+            console.error("Error booking meeting:", error);
+            alert("Failed to send the booking request.");
+        }
+    });
+</script>
+
 </body>
 </html>
