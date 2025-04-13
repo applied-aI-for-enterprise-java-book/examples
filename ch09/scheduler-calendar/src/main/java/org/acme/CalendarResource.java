@@ -4,18 +4,27 @@ import io.quarkus.runtime.Startup;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.acme.ai.EventTime;
 import org.acme.ai.SchedulerService;
+import org.acme.graph.State;
+import org.bsc.langgraph4j.CompiledGraph;
+import org.bsc.langgraph4j.RunnableConfig;
+import org.bsc.langgraph4j.utils.CollectionsUtils;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Path("/calendar")
 public class CalendarResource {
@@ -70,21 +79,76 @@ public class CalendarResource {
     }
 
     private String formatDate(LocalDateTime localDateTime) {
-        return localDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-                + "-"
-                + localDateTime.format(DateTimeFormatter.ISO_LOCAL_TIME);
+        return localDateTime
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy-HH:mm"));
     }
 
     @Inject
     SchedulerService schedulerService;
 
+    @Inject
+    CompiledGraph<State> graph;
+
+    public record Slots(List<String> slots){}
+
+    @POST
+    @Path("/getSlots")
+    public Slots getSlots(String message) {
+
+        var runnableConfig =  RunnableConfig.builder()
+                .threadId(getUser())
+                .build();
+
+        final Optional<State> optionalState =
+                graph.invoke(Map.of("query", message), runnableConfig);
+        final State state = optionalState.get();
+
+        return new Slots(state.currentSchedule());
+    }
+
+    public record Booking(String slot, String note){}
+
+    public record BookingResult(boolean success, boolean reschedule, List<String> slots){}
+
+    @POST
+    @Path("/bookMeeting")
+    public BookingResult bookMeeting(Booking booking) throws Exception {
+        System.out.println(booking);
+
+        var runnableConfig =  RunnableConfig.builder()
+                .threadId(getUser())
+                .build();
+
+        var updateConfig = graph.updateState(runnableConfig,
+                Map.of("currentSelection", booking.slot,
+                        "meetingName", booking.note),
+                null);
+
+        final Optional<State> optionalState =
+                graph.invoke(null, updateConfig);
+
+        State state = optionalState.get();
+
+        if (state.noValidSchedule()) {
+            System.out.println("Reschedule");
+            return new BookingResult(true,
+                    state.noValidSchedule(),
+                    state.currentSchedule());
+        }
+
+        return new BookingResult(true,
+                false,
+                Collections.emptyList());
+    }
+
+    // Testing
 
     @GET
     @Path("/1")
     public List<String> hello() {
         return schedulerService
                 .schedule("Can you book a meeting for tomorrow evening with Ada for 30 minutes?",
-                        LocalDate.now())
+                        LocalDate.now(), List.of())
                 .events()
                 .stream().map(EventTime::toString)
                 .toList();
@@ -95,9 +159,24 @@ public class CalendarResource {
     public List<String> hello2() {
         return schedulerService
                 .schedule("Can you book a meeting for the next week in the morning with Ada for 30 minutes?",
-                        LocalDate.now())
+                        LocalDate.now(), List.of())
                 .events()
                 .stream().map(EventTime::toString)
                 .toList();
+    }
+
+    @GET
+    @Path("/3")
+    public List<String> hello3() {
+        return schedulerService
+                .schedule("Can you book a meeting for tomorrow evening with Ada for 30 minutes?",
+                        LocalDate.now(), List.of("12/04/2025-15:00"))
+                .events()
+                .stream().map(EventTime::toString)
+                .toList();
+    }
+
+    private String getUser() {
+        return "alexandra@example.com";
     }
 }

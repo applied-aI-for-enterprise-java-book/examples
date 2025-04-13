@@ -21,7 +21,7 @@
             border-radius: 8px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
             text-align: center;
         }
 
@@ -93,8 +93,9 @@
     // Step 1: Submit name and get available slots
     submitNameBtn.addEventListener("click", async () => {
 
+        const name = nameInput.value.trim();
         try {
-            const response = await fetch("https://api.example.com/get-slots", {
+            const response = await fetch("http://localhost:8080/calendar/getSlots", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name })
@@ -105,11 +106,16 @@
             if (data.slots && data.slots.length > 0) {
                 radioOptionsDiv.innerHTML = "";
                 data.slots.forEach(slot => {
-                    const label = document.createElement("label");
-                    label.innerHTML = `<input type="radio" name="slot" value="${slot}"> ${slot}`;
+                    const label = document.createElement("div");
+                    label.innerHTML = `<input type="radio" name="slot" id="${slot}" value="${slot}"/> <label for="${slot}">${slot}</label>`;
                     radioOptionsDiv.appendChild(label);
                     radioOptionsDiv.appendChild(document.createElement("br"));
                 });
+
+                const label = document.createElement("div");
+                label.innerHTML = `<input type="radio" name="slot" id="none" value="none"/> <label for="none">none</label>`;
+                radioOptionsDiv.appendChild(label);
+                radioOptionsDiv.appendChild(document.createElement("br"));
 
                 radioOptionsDiv.classList.remove("hidden");
             } else {
@@ -125,7 +131,11 @@
     radioOptionsDiv.addEventListener("change", (event) => {
         if (event.target.type === "radio") {
             selectedSlot = event.target.value;
-            noteInput.classList.remove("hidden");
+
+            if (selectedSlot != "none") {
+                noteInput.classList.remove("hidden");
+            }
+
             sendFinalBtn.classList.remove("hidden");
         }
     });
@@ -135,7 +145,7 @@
         const note = noteInput.value.trim();
 
         try {
-            const response = await fetch("https://api.example.com/book-meeting", {
+            const response = await fetch("http://localhost:8080/calendar/bookMeeting", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ slot: selectedSlot, note })
@@ -144,12 +154,24 @@
             const result = await response.json();
 
             if (result.success) {
-                nameInput.classList.add("hidden");
-                submitNameBtn.classList.add("hidden");
-                radioOptionsDiv.classList.add("hidden");
-                noteInput.classList.add("hidden");
-                sendFinalBtn.classList.add("hidden");
-                successMessage.classList.remove("hidden");
+                if (!result.reschedule) {
+                    nameInput.classList.add("hidden");
+                    submitNameBtn.classList.add("hidden");
+                    radioOptionsDiv.classList.add("hidden");
+                    noteInput.classList.add("hidden");
+                    sendFinalBtn.classList.add("hidden");
+                    successMessage.classList.remove("hidden");
+                } else {
+                    radioOptionsDiv.innerHTML = "";
+                    result.slots.forEach(slot => {
+                        const label = document.createElement("div");
+                        label.innerHTML = `<input type="radio" name="slot" id="${slot}" value="${slot}"/> <label for="${slot}">${slot}</label>`;
+                        radioOptionsDiv.appendChild(label);
+                        radioOptionsDiv.appendChild(document.createElement("br"));
+                    });
+
+                    radioOptionsDiv.classList.remove("hidden");
+                }
             } else {
                 alert("Failed to book the meeting. Try again.");
             }

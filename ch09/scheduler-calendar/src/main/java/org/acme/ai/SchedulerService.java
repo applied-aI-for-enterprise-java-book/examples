@@ -43,13 +43,20 @@ public interface SchedulerService {
             Send only three possible suggestions for the event date,  
             expressed in the day, month and year, together with hour and minutes.
             Check the durations of the already booked events and the duration of the event to schedule correctly
-            
+                        
             If it is not possible to find a time to schedule a meeting, return that you couldn't find any available slot.
+            
+            It is also possible we sent you some forbidden dates you cannot book anything formatted in day/month/year-hour:minutes 
+
             ----
             Current date is: {{current_date}}.
+            
+            Forbidden dates: {{forbidden_dates}}
             
             The input is: {{message}}
             """)
     Events schedule(@V("message") String message,
-                                 @V("current_date") LocalDate currentDate);
+                    @V("current_date") LocalDate currentDate,
+                    @V("forbidden_dates") List<String> dates
+    );
 }
