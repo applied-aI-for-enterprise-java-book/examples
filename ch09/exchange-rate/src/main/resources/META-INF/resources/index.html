@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Chatbot</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="chat-container">
+    <div class="chat-header">
+        <div class="bot-avatar">
+            <img src="https://i.imgur.com/7QZ4Q0p.png" alt="Bot Avatar">
+        </div>
+        <h2>AI Assistant</h2>
+        <div class="status-indicator online"></div>
+    </div>
+
+    <div class="chat-messages" id="chat-messages">
+        <!-- Messages will appear here -->
+    </div>
+
+    <div class="chat-input">
+        <input type="text" id="user-input" placeholder="Type your message here..." autocomplete="off">
+        <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

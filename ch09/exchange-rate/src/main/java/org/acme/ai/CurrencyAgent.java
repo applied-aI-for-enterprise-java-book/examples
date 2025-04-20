@@ -1,29 +1,77 @@
 package org.acme.ai;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.langchain4j.agent.tool.ToolExecutionRequest;
+import dev.langchain4j.agent.tool.ToolSpecifications;
 import dev.langchain4j.data.message.AiMessage;
-import dev.langchain4j.model.output.Response;
-import dev.langchain4j.service.SystemMessage;
-import dev.langchain4j.service.UserMessage;
-import io.quarkiverse.langchain4j.RegisterAiService;
+import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.data.message.SystemMessage;
+import dev.langchain4j.data.message.ToolExecutionResultMessage;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.request.ChatRequest;
+import dev.langchain4j.model.chat.response.ChatResponse;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-@RegisterAiService(tools = ExchangeRateTool.class)
-public interface CurrencyAgent {
+@ApplicationScoped
+public class CurrencyAgent {
 
-    @SystemMessage("""
-            You are a specialized assistant for currency conversions.
-            Your sole purpose is to use a tool to answer questions about currency exchange rates. 
-            If the user asks about anything other than currency conversion or exchange rates, 
-            politely state that you cannot help with that topic and can only assist with currency-related queries. 
-            Do not attempt to answer unrelated questions or use tools for other purposes.
-            
-            Set response status to input_required if the user needs to provide more information.
-            Set response status to error if there is an error while processing the request with information of the error.
-            Set response status to completed if the request is complete.
-    """)
-    @UserMessage("""
-        You provide the conversion for the given currencies on the given date.
-        If no date is provided then use the 'latest' string.
-        The conversation with information about the conversion is: {{conversion}}
-    """)
-    Response<AiMessage> exchangeRate(String conversion);
+    @Inject
+    ChatLanguageModel model;
+
+    @Inject
+    ExchangeRateTool exchangeRateTool;
+
+    @Inject
+    ObjectMapper mapper;
+
+    public AiMessage exchangeRate(SystemMessage systemMessage, UserMessage userMessage) throws JsonProcessingException {
+       ChatRequest request = ChatRequest.builder()
+           .messages(
+               systemMessage,
+               userMessage
+           )
+           .toolSpecifications(ToolSpecifications.toolSpecificationsFrom(ExchangeRateTool.class))
+           .build();
+
+       ChatResponse response = model.chat(request);
+       return response.aiMessage();
+
+    }
+
+    public AiMessage invokeTool(List<ChatMessage> messages, ToolExecutionRequest toolExecutionRequest) throws JsonProcessingException {
+        // {"currencyFrom":"USD","currencyTo":"INR","currencyDate":"latest"}
+        final Map<String, String> arguments = mapper.readValue(
+            toolExecutionRequest.arguments(), Map.class);
+
+        final JsonNode exchangeRate = exchangeRateTool
+            .getExchangeRate(
+                arguments.get("currencyFrom"),
+                arguments.get("currencyTo"),
+                arguments.get("currencyDate"));
+
+        ToolExecutionResultMessage toolExecutionResultMessage =
+            ToolExecutionResultMessage.from(toolExecutionRequest,
+                mapper.writeValueAsString(exchangeRate));
+
+        final List<ChatMessage> chatMessages = new ArrayList<>(messages);
+        chatMessages.add(toolExecutionResultMessage);
+
+        ChatRequest request = ChatRequest.builder()
+            .messages(chatMessages)
+            .toolSpecifications(
+                ToolSpecifications.toolSpecificationsFrom(ExchangeRateTool.class)
+            )
+            .build();
+
+        return model.chat(request).aiMessage();
+
+    }
 }

@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ExchangeRateTest {
 
     @RestClient
-    ExchangeRate exchangeRate;
+    ExchangeRateService exchangeRate;
 
     @Test
     public void shouldGetStock() {
