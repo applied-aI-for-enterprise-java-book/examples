@@ -8,6 +8,7 @@ import org.jboss.resteasy.reactive.RestPath;
 import org.jboss.resteasy.reactive.RestQuery;
 
 @RegisterRestClient(configKey = "frankfurt")
+@Path("/v1")
 public interface ExchangeRateService {
 
     // {"amount":1.0,"base":"EUR","date":"2025-04-11","rates":{"USD":1.1346}}
@@ -15,6 +16,6 @@ public interface ExchangeRateService {
     @GET
     @Path("/{currentDate}")
     JsonNode exchange(@RestPath String currentDate,
-                      @RestQuery String from,
-                      @RestQuery String to);
+                      @RestQuery String base,
+                      @RestQuery String symbols);
 }

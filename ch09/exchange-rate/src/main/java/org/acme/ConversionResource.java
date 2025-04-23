@@ -16,7 +16,7 @@ public class ConversionResource {
     /**@GET
     public String convert() throws JsonProcessingException {
         AiMessage aiMessage = currencyAgent
-                .exchangeRate("How much is the exchange rate for 1 USD to INR?");
+                .exchangeRate("How much is the exchange rate for 1 USD to EUR?");
         return aiMessage.text();
     }
 

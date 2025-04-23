@@ -47,15 +47,14 @@ public class CurrencyAgent {
     }
 
     public AiMessage invokeTool(List<ChatMessage> messages, ToolExecutionRequest toolExecutionRequest) throws JsonProcessingException {
-        // {"currencyFrom":"USD","currencyTo":"INR","currencyDate":"latest"}
+        // {"currencyFrom":"USD","currencyTo":"INR"}
         final Map<String, String> arguments = mapper.readValue(
             toolExecutionRequest.arguments(), Map.class);
 
         final JsonNode exchangeRate = exchangeRateTool
             .getExchangeRate(
                 arguments.get("currencyFrom"),
-                arguments.get("currencyTo"),
-                arguments.get("currencyDate"));
+                arguments.get("currencyTo"));
 
         ToolExecutionResultMessage toolExecutionResultMessage =
             ToolExecutionResultMessage.from(toolExecutionRequest,

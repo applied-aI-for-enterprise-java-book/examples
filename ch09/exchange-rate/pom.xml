@@ -37,12 +37,12 @@
         <dependency>
             <groupId>org.bsc.langgraph4j</groupId>
             <artifactId>langgraph4j-core</artifactId>
-            <version>1.5.5</version>
+            <version>1.5.7</version>
         </dependency>
         <dependency>
             <groupId>org.bsc.langgraph4j</groupId>
             <artifactId>langgraph4j-langchain4j</artifactId>
-            <version>1.5.5</version>
+            <version>1.5.7</version>
         </dependency>
         <dependency>
             <groupId>io.quarkiverse.langchain4j</groupId>

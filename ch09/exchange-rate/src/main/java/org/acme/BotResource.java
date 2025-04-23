@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Context;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import org.acme.graph.GraphProducer;
@@ -35,25 +36,21 @@ public class BotResource {
         final Optional<StateSnapshot<GraphProducer.State>> stateStateSnapshot =
             graph.stateOf(runnableConfig);
 
-        System.out.println(baseCheckpointSaver);
-        System.out.println("**" + baseCheckpointSaver.get(runnableConfig));
-
         // First time, no previous execution
         if (stateStateSnapshot.isEmpty()) {
 
             final Optional<GraphProducer.State> optionalState =
-                graph.invoke(Map.of("question", chatRequest.message()));
+                graph.invoke(Map.of("question", chatRequest.message()),
+                    runnableConfig);
 
             final GraphProducer.State state = optionalState.get();
             String message = state.missingParameter().orElse(state.result());
-            System.out.println("++" +  baseCheckpointSaver.get(runnableConfig));
             return new ChatResponse(message);
 
         } else {
 
             final GraphProducer.State state = stateStateSnapshot.get().state();
             String originalQuestion = state.question();
-            System.out.println("Original Question: " + originalQuestion);
             String newQuestion = originalQuestion + System.lineSeparator() + chatRequest.message();
 
             var updateConfig = graph.updateState(runnableConfig,

@@ -54,14 +54,12 @@ public class GraphProducer {
     """;
 
     String userMessageTemplate = """
-        You provide the conversion for the given currencies on the given date.
-        If no date is provided then use the 'latest' string.
+        Provide the exchange rate for the provided currencies.
         
         User needs to provide both from and to currencies, if not, don't speculate putting both from and to currencies with the same value, 
         and return input_required. 
-        Use latest only for the date.
         
-        The conversation with information about the conversion is: {{conversion}}
+        The conversion message is: {{conversion}}
     """;
 
     public static class State extends MessagesState<ChatMessage> {
@@ -162,10 +160,9 @@ public class GraphProducer {
     @Produces
     public CompiledGraph<State> buildGraph(BaseCheckpointSaver checkpointSaver) throws Exception {
 
-        System.out.println(checkpointSaver);
-
         var compileConfig = CompileConfig.builder()
             .checkpointSaver(checkpointSaver)
+            .releaseThread(true)
             .interruptBefore("wait_for_human");
 
         var stateSerializer = new ObjectStreamStateSerializer<>( State::new );
