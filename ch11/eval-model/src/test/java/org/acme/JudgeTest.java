@@ -1,27 +1,27 @@
 package org.acme;
 
+import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.scoring.ScoringModel;
+import io.quarkiverse.langchain4j.scorer.junit5.AiScorer;
 import io.quarkiverse.langchain4j.scorer.junit5.ScorerConfiguration;
-import io.quarkiverse.langchain4j.scorer.junit5.ScorerExtension;
 import io.quarkiverse.langchain4j.testing.scorer.EvaluationReport;
-import io.quarkiverse.langchain4j.testing.scorer.EvaluationSample;
 import io.quarkiverse.langchain4j.testing.scorer.EvaluationStrategy;
 import io.quarkiverse.langchain4j.testing.scorer.Parameters;
 import io.quarkiverse.langchain4j.testing.scorer.Samples;
 import io.quarkiverse.langchain4j.testing.scorer.Scorer;
+import io.quarkiverse.langchain4j.testing.scorer.judge.AiJudgeStrategy;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.util.function.Function;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(ScorerExtension.class)
+@AiScorer
 @QuarkusTest
-public class ReRankerTest {
+public class JudgeTest {
 
     @Inject
     ScoringModel scoringModel;
@@ -32,25 +32,13 @@ public class ReRankerTest {
     @Inject
     AiServiceEvaluation aiServiceEvaluation;
 
-    public class RerankEvaluationStrategy implements EvaluationStrategy<String> {
-
-        private final ScoringModel scoringModel;
-
-        public RerankEvaluationStrategy(ScoringModel scoringModel) {
-            this.scoringModel = scoringModel;
-        }
-
-        @Override
-        public boolean evaluate(EvaluationSample<String> sample, String output) {
-            final String input = sample.parameters().get(0);
-            return scoringModel.score(output, input).content() > 0.85;
-        }
-    }
+    @Inject
+    ChatModel judge;
 
     @Test
     void evaluateSamples(@ScorerConfiguration Scorer scorer) {
         final Samples<String> evaluationSamples = CsvLoader.load("src/test/resources/test.csv");
-        EvaluationStrategy<String> strategy = new RerankEvaluationStrategy(scoringModel);
+        EvaluationStrategy<String> strategy = new AiJudgeStrategy(judge);
 
         EvaluationReport<String> report = scorer.evaluate(evaluationSamples, aiServiceEvaluation, strategy);
         assertThat(report.score()).isGreaterThan(80.0);
@@ -69,5 +57,4 @@ public class ReRankerTest {
             return assistant.assist(input);
         }
     }
-
 }

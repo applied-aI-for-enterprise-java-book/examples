@@ -88,7 +88,7 @@
       userInput.value = '';
 
       try {
-        const res = await fetch('https://api.example.com/chat', {
+        const res = await fetch('/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message })
@@ -115,7 +115,7 @@
 
     async function sendFeedback(responseId, feedbackType) {
       try {
-        await fetch('https://api.example.com/feedback', {
+        await fetch('/chat/feedback', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ responseId, feedback: feedbackType })
