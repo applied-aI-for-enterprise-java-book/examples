@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chatbot with Feedback</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f0f2f5;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+        }
+        .chat-container {
+          width: 400px;
+          background-color: white;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          border-radius: 8px;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+        .chat-messages {
+          flex: 1;
+          padding: 16px;
+          overflow-y: auto;
+        }
+        .chat-input {
+          display: flex;
+          border-top: 1px solid #ddd;
+        }
+        .chat-input input {
+          flex: 1;
+          padding: 12px;
+          border: none;
+          outline: none;
+        }
+        .chat-input button {
+          padding: 12px;
+          background-color: #007bff;
+          color: white;
+          border: none;
+          cursor: pointer;
+        }
+        .message {
+          margin-bottom: 12px;
+        }
+        .bot-response {
+          background-color: #e9ecef;
+          padding: 10px;
+          border-radius: 5px;
+          position: relative;
+        }
+        .feedback {
+          margin-top: 5px;
+        }
+        .feedback span {
+          margin: 0 5px;
+          cursor: pointer;
+          font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+<div class="chat-container">
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Type a message..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    async function sendMessage() {
+      const userInput = document.getElementById('userInput');
+      const message = userInput.value.trim();
+      if (!message) return;
+
+      const chatMessages = document.getElementById('chatMessages');
+      const userMsg = document.createElement('div');
+      userMsg.classList.add('message');
+      userMsg.textContent = `You: ${message}`;
+      chatMessages.appendChild(userMsg);
+
+      userInput.value = '';
+
+      try {
+        const res = await fetch('https://api.example.com/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+        const data = await res.json();
+
+        const botMsg = document.createElement('div');
+        botMsg.classList.add('message');
+        botMsg.innerHTML = `
+          <div class="bot-response">
+            ${data.response}
+            <div class="feedback">
+              <span onclick="sendFeedback('${data.id}', 'up')">👍</span>
+              <span onclick="sendFeedback('${data.id}', 'down')">👎</span>
+            </div>
+          </div>`;
+        chatMessages.appendChild(botMsg);
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      } catch (err) {
+        console.error('Error sending message:', err);
+      }
+    }
+
+    async function sendFeedback(responseId, feedbackType) {
+      try {
+        await fetch('https://api.example.com/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ responseId, feedback: feedbackType })
+        });
+        alert(`Feedback sent: ${feedbackType}`);
+      } catch (err) {
+        console.error('Error sending feedback:', err);
+      }
+    }
+</script>
+</body>
+</html>
