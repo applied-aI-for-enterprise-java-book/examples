@@ -42,7 +42,7 @@ public class PlaywrightBotFactory {
                 .build();
 
         return AiServices.builder(PlaywrightBot.class)
-                .chatLanguageModel(model)
+                .chatModel(model)
                 .toolProvider(toolProvider)
                 .build();
 

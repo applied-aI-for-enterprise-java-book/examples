@@ -1,8 +1,9 @@
 package org.acme.triage_service;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
 import java.util.HashMap;
 import java.util.Map;
+
+import dev.langchain4j.model.chat.ChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +15,7 @@ public class TriageServiceController {
     TriageService triageService;
 
     @Autowired
-    ChatLanguageModel chatLanguageModel;
+    ChatModel chatLanguageModel;
 
 
     @GetMapping("/capital")

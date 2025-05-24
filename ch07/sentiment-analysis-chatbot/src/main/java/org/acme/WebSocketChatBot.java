@@ -1,6 +1,6 @@
 package org.acme;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
 import io.quarkus.websockets.next.OnTextMessage;
 import io.quarkus.websockets.next.WebSocket;
 import jakarta.inject.Inject;
@@ -10,7 +10,7 @@ import java.util.List;
 public class WebSocketChatBot {
 
     @Inject
-    ChatLanguageModel chatLanguageModel;
+    ChatModel chatLanguageModel;
 
     @Inject
     SentimentAnalysis sentimentAnalysis;

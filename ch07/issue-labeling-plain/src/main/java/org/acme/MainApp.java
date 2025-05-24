@@ -1,6 +1,6 @@
 package org.acme;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.request.ResponseFormat;
 import dev.langchain4j.model.chat.request.ResponseFormatType;
 import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
@@ -59,7 +59,7 @@ public class MainApp {
 
     public static void main(String[] args) {
 
-        ChatLanguageModel model = GoogleAiGeminiChatModel.builder() // <1>
+        ChatModel model = GoogleAiGeminiChatModel.builder() // <1>
             .apiKey(System.getProperty("API_KEY")) // <2>
             .modelName("gemini-1.5-flash") // <3>
             .responseFormat(ResponseFormat.builder() // <4>
@@ -69,7 +69,7 @@ public class MainApp {
             .build();
 
         LabelDetector labelDetector = AiServices.builder(LabelDetector.class)
-            .chatLanguageModel(model)
+            .chatModel(model)
             .build();
 
         IssueClassification label1 = labelDetector

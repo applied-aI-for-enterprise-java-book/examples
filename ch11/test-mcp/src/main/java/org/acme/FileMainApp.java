@@ -41,7 +41,7 @@ public class FileMainApp {
                 .build();
 
         Bot bot = AiServices.builder(Bot.class)
-                .chatLanguageModel(model)
+                .chatModel(model)
                 .toolProvider(toolProvider)
                 .build();
 
