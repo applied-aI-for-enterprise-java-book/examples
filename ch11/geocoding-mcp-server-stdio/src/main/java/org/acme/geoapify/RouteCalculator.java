@@ -3,8 +3,11 @@ package org.acme.geoapify;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
+
+import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.logging.Logger;
 
 @ApplicationScoped
 public class RouteCalculator {
@@ -18,27 +21,28 @@ public class RouteCalculator {
     @RestClient
     ForwardClient forwardClient;
 
-    public Uni<Instructions> findRoute(String origin, String destination) {
+    @Inject
+    Logger logger;
 
-        ForwardClient.Results originWaypoint = forwardClient.resolve(origin, "json", apiKey);
-        ForwardClient.Results destinationWaypoint = forwardClient.resolve(destination, "json", apiKey);
+    public Instructions findRoute(String origin, String destination) {
 
-        System.out.println("****");
-        System.out.println(originWaypoint.results().getFirst().lat());
-        System.out.println(destinationWaypoint.results().getFirst().lat());
-        return null;
-        /**final Uni<ForwardClient.Results> originWaypoint = forwardClient.resolve(origin, "json", apiKey);
+        final Uni<ForwardClient.Results> originWaypoint = forwardClient.resolve(origin, "json", apiKey);
         final Uni<ForwardClient.Results> destinationWaypoint = forwardClient.resolve(destination, "json", apiKey);
 
-        return Uni.combine()
-            .all()
-            .unis(originWaypoint, destinationWaypoint)
-            // Appends the lat/lon of origin and dest to geoapify required format
-            .with(this::calculateWaypoints)
-            .onItem()
-            .transformToUni(waypoints -> routingClient.route(waypoints, "drive", apiKey))
-            .onItem()
-            .transform(this::getInstructions);**/
+        Uni<Instructions> instructionsUni = Uni.combine()
+                .all()
+                .unis(originWaypoint, destinationWaypoint)
+                // Appends the lat/lon of origin and dest to geoapify required format
+                .with(this::calculateWaypoints)
+                .onItem()
+                .transformToUni(waypoints -> routingClient.route(waypoints, "drive", apiKey))
+                .onItem()
+                .transform(this::getInstructions);
+
+        Instructions instructions = instructionsUni.await().indefinitely();
+
+        logger.info(instructions);
+        return instructions;
 
     }
 

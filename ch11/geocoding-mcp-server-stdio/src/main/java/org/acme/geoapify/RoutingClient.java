@@ -38,7 +38,7 @@ public interface RoutingClient {
 
     @Path("/routing")
     @GET
-    Features route(@QueryParam("waypoints") String waypoints,
+    Uni<Features> route(@QueryParam("waypoints") String waypoints,
         @QueryParam("mode") String mode,
         @QueryParam("apiKey") String apiKey);
 

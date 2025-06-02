@@ -1,0 +1,4 @@
+2025-05-30 16:10:22,247 asotobue-mac /Library/Java/JavaVirtualMachines/temurin-23.jdk/Contents/Home/bin/java[50562] INFO  [io.quarkus] (main) geocoding-mcp-server-stdio 1.0.0-SNAPSHOT on JVM (powered by Quarkus 3.23.0) started in 0.369s. 
+2025-05-30 16:10:22,250 asotobue-mac /Library/Java/JavaVirtualMachines/temurin-23.jdk/Contents/Home/bin/java[50562] INFO  [io.quarkus] (main) Profile prod activated. 
+2025-05-30 16:10:22,250 asotobue-mac /Library/Java/JavaVirtualMachines/temurin-23.jdk/Contents/Home/bin/java[50562] INFO  [io.quarkus] (main) Installed features: [cdi, mcp-server-stdio, qute, rest-client, rest-client-jackson, smallrye-context-propagation, vertx]
+2025-06-02 10:15:21,592 asotobue-mac /Library/Java/JavaVirtualMachines/temurin-23.jdk/Contents/Home/bin/java[50562] INFO  [io.quarkus] (main) geocoding-mcp-server-stdio stopped in 0.022s

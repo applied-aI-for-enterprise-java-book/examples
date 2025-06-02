@@ -16,7 +16,7 @@ public interface ForwardClient {
 
     @Path("/geocode/search")
     @GET
-    Results resolve(@QueryParam("text") String text,
+    Uni<Results> resolve(@QueryParam("text") String text,
         @QueryParam("format") String format,
         @QueryParam("apiKey") String apiKey);
 
