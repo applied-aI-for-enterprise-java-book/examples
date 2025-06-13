@@ -1,5 +1,10 @@
 package org.acme;
 
+import dev.langchain4j.mcp.client.McpClient;
+import dev.langchain4j.mcp.client.McpReadResourceResult;
+import dev.langchain4j.mcp.client.McpResource;
+import dev.langchain4j.mcp.client.McpResourceContents;
+import dev.langchain4j.mcp.client.McpTextResourceContents;
 import io.quarkus.runtime.Startup;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -34,13 +39,25 @@ public class PersonResource {
     @Inject
     ChatBot chatBot;
 
+    @io.quarkiverse.langchain4j.mcp.runtime.McpClientName("postgres")
+    McpClient mcpClient;
+
     @GET
-    public List<Person> findAll() {
-        return Person.listAll();
+    public String getSchema() {
+
+        McpReadResourceResult mcpReadResourceResult = mcpClient.readResource("postgres://postgres@localhost:5432/person/schema");
+        McpTextResourceContents mcpResourceContents = (McpTextResourceContents) mcpReadResourceResult.contents().getFirst();
+        System.out.println(mcpResourceContents.text());
+
+
+
+        return null;
     }
 
     @POST
     public PersonsDto chat(String query) {
-        return chatBot.chat(query);
+        PersonsDto chat = chatBot.chat(query);
+        System.out.println(chat);
+        return chat;
     }
 }

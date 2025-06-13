@@ -3,6 +3,7 @@ package org.acme;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import io.quarkiverse.langchain4j.RegisterAiService;
+import io.quarkiverse.langchain4j.mcp.runtime.McpToolBox;
 
 @RegisterAiService
 @SystemMessage("""
@@ -13,5 +14,6 @@ import io.quarkiverse.langchain4j.RegisterAiService;
     The table with user information is named "person".
     """)
 public interface ChatBot {
+    @McpToolBox("postgres")
     PersonsDto chat(@UserMessage String message);
 }

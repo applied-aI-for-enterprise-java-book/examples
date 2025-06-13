@@ -6,7 +6,7 @@ import dev.langchain4j.mcp.client.DefaultMcpClient;
 import dev.langchain4j.mcp.client.McpClient;
 import dev.langchain4j.mcp.client.transport.McpTransport;
 import dev.langchain4j.mcp.client.transport.stdio.StdioMcpTransport;
-import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.service.tool.ToolProvider;
 
@@ -18,9 +18,9 @@ import java.util.List;
 public class FileMainApp {
     public static void main(String[] args) throws IOException {
 
-        OpenAiChatModel model = OpenAiChatModel.builder()
+        GoogleAiGeminiChatModel model = GoogleAiGeminiChatModel.builder()
                 .apiKey(Files.readString(Paths.get(".env")))
-                .modelName("gpt-4o-mini")
+                .modelName("gemini-2.0-flash")
                 .build();
 
         McpTransport transport = new StdioMcpTransport.Builder()
@@ -46,7 +46,7 @@ public class FileMainApp {
                 .build();
 
 
-        System.out.println(bot.chat("Read the contents of the file hello.txt."));
+        System.out.println(bot.chat("Read the contents of the file playground/hello.txt."));
 
     }
 }

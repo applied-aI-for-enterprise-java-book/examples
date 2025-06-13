@@ -5,7 +5,7 @@ import dev.langchain4j.mcp.client.DefaultMcpClient;
 import dev.langchain4j.mcp.client.McpClient;
 import dev.langchain4j.mcp.client.transport.McpTransport;
 import dev.langchain4j.mcp.client.transport.stdio.StdioMcpTransport;
-import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.service.tool.ToolProvider;
 
@@ -32,9 +32,9 @@ public class PlaywrightBotFactory {
     }
 
     public static PlaywrightBot createBot(McpClient client) throws IOException {
-        OpenAiChatModel model = OpenAiChatModel.builder()
+        GoogleAiGeminiChatModel model = GoogleAiGeminiChatModel.builder()
                 .apiKey(Files.readString(Paths.get(".env")))
-                .modelName("gpt-4o-mini")
+                .modelName("gemini-2.0-flash")
                 .build();
 
         ToolProvider toolProvider = McpToolProvider.builder()
