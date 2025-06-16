@@ -39,6 +39,4 @@ public class ChineseZodiacYearCalculatorMcpServer {
                 "Not a valid date (yyyy-MM-dd): " + localDate);
         }
     }
-
-
 }
