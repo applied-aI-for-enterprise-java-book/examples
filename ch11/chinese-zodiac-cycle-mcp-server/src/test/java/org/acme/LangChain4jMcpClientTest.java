@@ -7,6 +7,7 @@ import dev.langchain4j.mcp.client.transport.http.HttpMcpTransport;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,12 +27,16 @@ public class LangChain4jMcpClientTest {
 
     @BeforeEach
     void setUpMcpClient() {
-        System.out.println(url);
         mcpClient = new DefaultMcpClient.Builder()
                 .clientName("test-mcp-client-zodiac")
                 .toolExecutionTimeout(Duration.ofSeconds(10))
                 .transport(new HttpMcpTransport.Builder().sseUrl(url.toString() + "mcp/sse").build())
                 .build();
+    }
+
+    @AfterEach
+    void closeClient() throws Exception {
+        this.mcpClient.close();
     }
 
     @Test
