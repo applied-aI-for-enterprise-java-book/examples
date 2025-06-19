@@ -2,7 +2,7 @@ package org.acme;
 
 
 import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.embedding.onnx.allminilml6v2.AllMiniLmL6V2EmbeddingModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
@@ -106,7 +106,7 @@ public class MainApp {
 
         StringBuilder dataTemplate = new StringBuilder();
 
-        ChatLanguageModel model = OpenAiChatModel.builder()
+        ChatModel model = OpenAiChatModel.builder()
                 .apiKey("demo")
                 .modelName(OpenAiChatModelName.GPT_4_O_MINI)
                 .build();

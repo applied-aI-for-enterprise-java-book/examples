@@ -53,17 +53,17 @@
         <dependency>
             <groupId>io.quarkiverse.langchain4j</groupId>
             <artifactId>quarkus-langchain4j-chroma</artifactId>
-            <version>0.26.0.CR2</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>io.quarkiverse.langchain4j</groupId>
             <artifactId>quarkus-langchain4j-openai</artifactId>
-            <version>0.26.0.CR2</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>io.quarkiverse.langchain4j</groupId>
             <artifactId>quarkus-langchain4j-tavily</artifactId>
-            <version>0.26.0.CR2</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

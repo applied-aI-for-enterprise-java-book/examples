@@ -1,8 +1,7 @@
 package org.acme.rag;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.rag.DefaultRetrievalAugmentor;
 import dev.langchain4j.rag.RetrievalAugmentor;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
@@ -28,7 +27,7 @@ public class RidesRetrievalAugmentator implements Supplier<RetrievalAugmentor> {
     public RidesRetrievalAugmentator(ChromaEmbeddingStore store,
                                      EmbeddingModel model,
                                      WebSearchEngine searchEngine,
-                                     ChatLanguageModel languageModel) {
+                                     ChatModel languageModel) {
 
         ContentRetriever webSearchRetriever = WebSearchContentRetriever.builder()
                 .webSearchEngine(searchEngine)
