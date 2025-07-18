@@ -39,19 +39,21 @@ public class ConditionalMainApp {
 
     public CompiledGraph<State> createGraph() throws GraphStateException {
         return new StateGraph<>(State::new)
-            .addNode("createMessage", node_async(this::setsMessage))
-            .addEdge(StateGraph.START, "createMessage")
-            .addNode("toUpperCase", node_async(state ->
-                Map.of("message", state.message().get().toUpperCase())))
-            .addNode("surroundCase", node_async(this::surroundMessage))
-            .addConditionalEdges("createMessage",
-                edge_async(state ->
-                    state.age().get() >= 18 ? "adult" : "minor"),
-                Map.of("minor", "surroundCase",
-                    "adult", "toUpperCase"))
-            .addEdge("toUpperCase", StateGraph.END)
-            .addEdge("surroundCase", StateGraph.END)
-            .compile();
+                .addNode("createMessage", node_async(this::setsMessage))
+                .addEdge(StateGraph.START, "createMessage")
+                .addNode("toUpperCase", node_async(state ->
+                        Map.of("message", state.message().get().toUpperCase())))
+                .addNode("surroundCase", node_async(this::surroundMessage)) // <1>
+                .addConditionalEdges("createMessage", // <2>
+                        edge_async(state -> // <3>
+                                state.age()
+                                        .map(age -> age >= 18 ? "adult" : "minor")
+                                        .orElse("minor")), // <4>
+                        Map.of("minor", "surroundCase", // <5>
+                                "adult", "toUpperCase")) // <6>
+                .addEdge("toUpperCase", StateGraph.END)
+                .addEdge("surroundCase", StateGraph.END) // <7>
+                .compile();
     }
 
     public static void main(String[] args) throws GraphStateException {
