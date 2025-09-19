@@ -6,11 +6,16 @@ import io.quarkiverse.mcp.server.ToolArg;
 import io.quarkiverse.mcp.server.ToolResponse;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import org.jboss.logging.Logger;
+
 import java.time.DateTimeException;
 import java.time.LocalDate;
 
 @Singleton
 public class ChineseZodiacYearCalculatorMcpServer {
+
+    @Inject
+    Logger logger;
 
     @Inject
     ZodiacYearCalculator zodiacYearCalculator;
@@ -26,6 +31,8 @@ public class ChineseZodiacYearCalculatorMcpServer {
         String localDate) {
 
         try {
+
+            logger.infof("Invoked with %s", localDate);
 
             LocalDate parsedLocalDate = LocalDate.parse(localDate);
             final String zodiac = zodiacYearCalculator

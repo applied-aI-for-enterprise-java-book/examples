@@ -13,16 +13,15 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 public class MCPClientTest {
 
-    /**@RegisterAiService
-    interface Assistant {
+    @Inject
+    Assistant assistant;
 
-        @SystemMessage("""
-                You are an assistant to answer questions for any user.
-                You have a function to calculate the chinese zodiacal animal from a given date. 
-                """)
-        @McpToolBox("zodiac")
-        String askMe(@UserMessage  String message);
-    }**/
+    @Test
+    public void shouldUseMcp() {
+        System.out.println(
+                assistant.askMe("Can you give me my chinese zodiacal animal if I was born on 4th of July of 1980?")
+        );
+    }
 
     @Inject
     @McpClientName("zodiac")
